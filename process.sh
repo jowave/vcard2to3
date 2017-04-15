@@ -12,7 +12,7 @@ fi
 if [ $? -ne 0 ]; then
     exit
 fi
-./vcard_sort.py $tmp $out
+./vcard_merge.py $tmp $out
 if [ $? -ne 0 ]; then
     exit
 fi
