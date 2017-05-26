@@ -94,8 +94,9 @@ class Replacer:
 class Remover:
     def __init__(self, patterns):
         self.filters = []
-        for p in patterns:
-            self.filters.append(re.compile(p))
+        if patterns is not None:
+            for p in patterns:
+                self.filters.append(re.compile(p))
 
     def __call__(self, line):
         return self.remove(line)
@@ -128,8 +129,8 @@ def main(argv):
     replace = Replacer()
     if args.remove_dollar:
         replace.replace_filters.append( (re.compile('^(N|FN):([^$]+)\$'), '\\1:\\2') )
-    remove_line = Remover(args.remove)
-    remove_card = Remover(args.remove_card)
+    remove_line = Remover(args.remove if args.remove else None)
+    remove_card = Remover(args.remove_card if args.remove_card else None)
 
     # VCard uses '\r\n' new lines (CRLF)
     with open(args.infile) as infile, open(out_name, 'w', newline='\r\n') as outfile:
