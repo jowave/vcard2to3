@@ -15,6 +15,10 @@ Quickstart:
     
 The output will be a file `your_file.vcf.converted`.
 
+To show available command-line arguments run:
+
+    ./vcard2to3.py --help
+
 ## vcard_merge.py
 
 Merge and sort vcards. With `vcard_merge.py` you can remove duplicate contacts. The contacts are sorted and merged by `FN` and duplicate lines within one contact are omitted.
