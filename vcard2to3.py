@@ -45,22 +45,32 @@ class VCard:
         for line in self.lines:
             to.write(line)
 
-class Decoder:
+class QuotedPrintableDecoder:
     quoted = re.compile('.*(;CHARSET=.+;ENCODING=QUOTED-PRINTABLE)')
-    quoted2 = re.compile('^=[0-9A-F]{2}')
     def __init__(self):
+        self._consumed_lines = ''
         pass
 
     def __call__(self, line):
         return self.decode(line)
 
     def decode(self, line):
-        m = Decoder.quoted.match(line)
+        line = self._consumed_lines + line # add potentially stored previous lines
+        self._consumed_lines = ''
+        m = QuotedPrintableDecoder.quoted.match(line)
         if m:
             line = line[:m.start(1)] + line[m.end(1):]
-        if m or Decoder.quoted2.match(line):
-            line = quopri.decodestring(line).decode('UTF-8')
+            return quopri.decodestring(line).decode('UTF-8')
         return line
+
+    def consume_incomplete(self, line):
+        # consume all lines ending with '=', where the first line started the quoted-printable
+        if line.endswith('=\n'):
+            m = QuotedPrintableDecoder.quoted.match(line)
+            if m or len(self._consumed_lines) > 0:
+                self._consumed_lines += line
+                return True
+        return False
 
 
 class Replacer:
@@ -126,20 +136,24 @@ def main(argv):
         out_name = args.infile+'.converted'
 
     vcard = VCard(True if args.prune_empty else False)
-    decode = Decoder()
+    decoder = QuotedPrintableDecoder()
     replace = Replacer()
     if args.remove_dollar:
         replace.replace_filters.append( (re.compile('^(N|FN):([^$]+)\$'), '\\1:\\2') )
     remove_line = Remover(args.remove if args.remove else None)
     remove_card = Remover(args.remove_card if args.remove_card else None)
 
+    last_line = ''
     # VCard uses '\r\n' new lines (CRLF)
     with open(args.infile) as infile, open(out_name, 'w', newline='\r\n', encoding=args.out_encoding) as outfile:
         for line in infile:
+            if decoder.consume_incomplete(line):
+                continue
+
             if line.startswith(VCard.BEGIN):
                 vcard.reset()
 
-            line = decode(line)
+            line = decoder.decode(line)
             line = replace(line)
             if not remove_line(line):
                 vcard.add(line)
