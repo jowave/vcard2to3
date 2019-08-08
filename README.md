@@ -24,6 +24,7 @@ To show available command-line arguments run:
 Merge and sort vcards. With `vcard_merge.py` you can remove duplicate contacts. The contacts are sorted and merged by `FN` and duplicate lines within one contact are omitted.
 You may have to manually edit the result.
 
-References
+## References
+
 * [VCard 3.0](https://tools.ietf.org/html/rfc2426)
 * [VCard 4.0](https://tools.ietf.org/html/rfc6350)
