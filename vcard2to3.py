@@ -46,7 +46,9 @@ class VCard:
             to.write(line)
 
 class QuotedPrintableDecoder:
-    quoted = re.compile('.*(;CHARSET=.+;ENCODING=QUOTED-PRINTABLE)')
+    # Match 'QUOTED-PRINTABLE' with optional preceding or following 'CHARSET'.
+    # Note: the value of CHARSET is ignored, decoding is always to UTF-8.
+    quoted = re.compile('.*((;CHARSET=.+)?;ENCODING=QUOTED-PRINTABLE(;CHARSET=.+?)?):')
     def __init__(self):
         self._consumed_lines = ''
         pass
