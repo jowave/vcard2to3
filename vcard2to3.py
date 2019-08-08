@@ -61,8 +61,12 @@ class QuotedPrintableDecoder:
         self._consumed_lines = ''
         m = QuotedPrintableDecoder.quoted.match(line)
         if m:
-            line = line[:m.start(1)] + line[m.end(1):]
-            return quopri.decodestring(line).decode('UTF-8')
+            line = line[:m.start(1)] + line[m.end(1):] # remove the matched group 1 from line
+            decoded_line = quopri.decodestring(line).decode('UTF-8')
+            # Escape newlines, but preserve the last one (which must be '\n', since we read the file in universal newliens mode)
+            decoded_line = decoded_line[:-1].replace('\r\n', '\\n')
+            decoded_line = decoded_line.replace('\n', '\\n')
+            return decoded_line + '\n'
         return line
 
     def consume_incomplete(self, line):
