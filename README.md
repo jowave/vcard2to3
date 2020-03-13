@@ -4,6 +4,9 @@ Convert vcards from version 2.1 to version 3.0.
 
 I wrote these scripts to convert contacts exported from an Android 4.x phone and import them into Nextcloud. It worked for me, your mileage may vary.
 
+The scripts are rather simple, they don't cover all differences between 2.1 and 3.0.
+
+
 ## vcard2to3.py
 
 `vcard2to3.py` is the conversion script.
