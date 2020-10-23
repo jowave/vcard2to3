@@ -91,7 +91,7 @@ class Replacer:
         #self.replace_filters.append( (re.compile(';PREF([;:])'), ';PREF=1\\1') ) # Version 4.0
         self.replace_filters.append( (re.compile('^X-JABBER(;?.*):(.+)'), 'IMPP\\1:xmpp:\\2') ) # Version 4.0
         self.replace_filters.append( (re.compile('^X-ICQ(;?.*):(.+)'), 'IMPP\\1:icq:\\2') ) # Version 4.0
-        self.replace_filters.append( (re.compile('^(TEL|EMAIL|ADR|IMPP);([^;:=]+[;:])'), Replacer.type_lc) )
+        self.replace_filters.append( (re.compile('^(TEL|EMAIL|ADR|URL|LABEL|IMPP);([^;:=]+[;:])'), Replacer.type_lc) )
         self.replace_filters.append( (re.compile('^EMAIL:([^@]+@jabber.*)'), 'IMPP;xmpp:\\1') )
 
     def type_lc(matchobj):
