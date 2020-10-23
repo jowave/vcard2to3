@@ -81,7 +81,7 @@ class QuotedPrintableDecoder:
 
 class Replacer:
     def __init__(self):
-        self.replace_filters = []
+        self.replace_filters = [] # array of 2-tuples. Each tuple consists of regular expression object and replacement. Replacement may be a string or a function, see https://docs.python.org/3/library/re.html#re.sub
         self.replace_filters.append( (re.compile('^VERSION:.*'), 'VERSION:3.0') )
         #self.replace_filters.append( (re.compile('^PHOTO;ENCODING=BASE64;JPEG:'), 'PHOTO:data:image/jpeg;base64,') ) # Version 4.0
         self.replace_filters.append( (re.compile('^PHOTO;ENCODING=BASE64;JPEG:'), 'PHOTO;ENCODING=b;TYPE=JPEG:')) # Version 3.0
@@ -95,6 +95,10 @@ class Replacer:
         self.replace_filters.append( (re.compile('^EMAIL:([^@]+@jabber.*)'), 'IMPP;xmpp:\\1') )
 
     def type_lc(matchobj):
+        # Example:
+        # TEL;CELL;VOICE:+49123456789
+        # will become:
+        # TEL;TYPE=cell;VOICE:+49123456789
         return matchobj.group(1)+';TYPE='+matchobj.group(2).lower()
 
 
