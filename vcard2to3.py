@@ -133,6 +133,7 @@ def main(argv):
     parser = argparse.ArgumentParser(description='Convert VCard 2.1 to VCard 3.0.')
     parser.add_argument('infile')
     parser.add_argument('outfile', nargs='?')
+    parser.add_argument('--in_encoding', help='the encoding of the input file (default: platform dependent)')
     parser.add_argument('--out_encoding', help='the encoding for the output file (default: platform dependent)')
     parser.add_argument('-r', '--remove', action='append', help='remove lines matching regex REMOVE, can be given multiple times')
     parser.add_argument('--remove_card', action='append', help='remove vcards for which any line matches regex REMOVE, can be given multiple times')
@@ -155,7 +156,7 @@ def main(argv):
 
     last_line = ''
     # VCard uses '\r\n' new lines (CRLF)
-    with open(args.infile) as infile, open(out_name, 'w', newline='\r\n', encoding=args.out_encoding) as outfile:
+    with open(args.infile, mode='r', encoding=args.in_encoding) as infile, open(out_name, 'w', newline='\r\n', encoding=args.out_encoding) as outfile:
         for line in infile:
             if decoder.consume_incomplete(line):
                 continue
