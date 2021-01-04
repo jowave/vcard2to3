@@ -6,6 +6,7 @@ FN;CHARSET=UTF-8:Mäx Mustermann
 TEL;CELL;VOICE:+49123456789
 EMAIL;PREF;INTERNET:max@mustermann.de
 X-ICQ:1234
+X-ANDROID-CUSTOM:vnd.android.cursor.item/nickname;Mäx;1;;;;;;;;;;;;;
 END:VCARD
 
 BEGIN:VCARD
