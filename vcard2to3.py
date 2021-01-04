@@ -80,6 +80,8 @@ class QuotedPrintableDecoder:
 
 
 class Replacer:
+    type_param_re = re.compile('^(TEL|EMAIL|ADR|URL|LABEL|IMPP);([^:=]+:)') # Regex to create 'TYPE=' paramter, see also Replacer.type_lc. In the second group match everything up to ':', but don't match if '=' or another ':' is found.
+
     def __init__(self):
         self.replace_filters = [] # array of 2-tuples. Each tuple consists of regular expression object and replacement. Replacement may be a string or a function, see https://docs.python.org/3/library/re.html#re.sub
         self.replace_filters.append( (re.compile('^VERSION:.*'), 'VERSION:3.0') )
@@ -87,11 +89,11 @@ class Replacer:
         self.replace_filters.append( (re.compile('^PHOTO;ENCODING=BASE64;JPEG:'), 'PHOTO;ENCODING=b;TYPE=JPEG:')) # Version 3.0
         self.replace_filters.append( (re.compile(';X-INTERNET([;:])'), '\\1') )
         self.replace_filters.append( (re.compile('^X-ANDROID-CUSTOM:vnd.android.cursor.item/nickname;([^;]+);.*'), 'NICKNAME:\\1') )
-        self.replace_filters.append( (re.compile(';PREF([;:])'), ';TYPE=PREF\\1') ) # Version 3.0
-        #self.replace_filters.append( (re.compile(';PREF([;:])'), ';PREF=1\\1') ) # Version 4.0
         self.replace_filters.append( (re.compile('^X-JABBER(;?.*):(.+)'), 'IMPP\\1:xmpp:\\2') ) # Version 4.0
         self.replace_filters.append( (re.compile('^X-ICQ(;?.*):(.+)'), 'IMPP\\1:icq:\\2') ) # Version 4.0
-        self.replace_filters.append( (re.compile('^(TEL|EMAIL|ADR|URL|LABEL|IMPP);([^;:=]+[;:])'), Replacer.type_lc) )
+        self.replace_filters.append( (Replacer.type_param_re, Replacer.type_lc) )
+        self.replace_filters.append( (re.compile(';PREF([;:])'), ';TYPE=PREF\\1') ) # Version 3.0
+        #self.replace_filters.append( (re.compile(';PREF([;:])'), ';PREF=1\\1') ) # Version 4.0
         self.replace_filters.append( (re.compile('^EMAIL:([^@]+@jabber.*)'), 'IMPP;xmpp:\\1') )
         self.replace_filters.append( (re.compile('^TEL;TYPE=x-mobil:(.*)'), 'TEL;TYPE=cell:\\1') ) # see #9
 
@@ -99,8 +101,8 @@ class Replacer:
         # Example:
         # TEL;CELL;VOICE:+49123456789
         # will become:
-        # TEL;TYPE=cell;VOICE:+49123456789
-        return matchobj.group(1)+';TYPE='+matchobj.group(2).lower()
+        # TEL;TYPE=cell,voice:+49123456789
+        return matchobj.group(1)+';TYPE='+matchobj.group(2).lower().replace(";", ",")
 
 
     def __call__(self, line):
