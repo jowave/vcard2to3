@@ -22,6 +22,35 @@ To show available command-line arguments run:
 
     ./vcard2to3.py --help
 
+    usage: vcard2to3.py [-h] [--in_encoding IN_ENCODING]
+                        [--out_encoding OUT_ENCODING] [-r REMOVE]
+                        [--remove_card REMOVE_CARD] [--remove_dollar] [-p]
+                        infile [outfile]
+
+    Convert VCard 2.1 to VCard 3.0.
+
+    positional arguments:
+      infile
+      outfile
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --in_encoding IN_ENCODING
+                            the encoding of the input file (default: platform
+                            dependent)
+      --out_encoding OUT_ENCODING
+                            the encoding for the output file (default: platform
+                            dependent)
+      -r REMOVE, --remove REMOVE
+                            remove lines matching regex REMOVE, can be given
+                            multiple times
+      --remove_card REMOVE_CARD
+                            remove vcards for which any line matches regex REMOVE,
+                            can be given multiple times
+      --remove_dollar       remove "$" in N and FN values
+      -p, --prune_empty     remove vcards which have only FN but no additional
+                            fields
+
 ## vcard_merge.py
 
 Merge and sort vcards. With `vcard_merge.py` you can remove duplicate contacts. The contacts are sorted and merged by `FN` and duplicate lines within one contact are omitted.
