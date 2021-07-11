@@ -47,9 +47,10 @@ class VCard:
 
 class QuotedPrintableDecoder:
     # Match 'QUOTED-PRINTABLE' with optional preceding or following 'CHARSET'.
-    # Note: the value of CHARSET is ignored, decoding is always to UTF-8.
+    # Note: the value of CHARSET is ignored, decoding is always done using the 'encoding' constructor parameter.
     quoted = re.compile('.*((;CHARSET=.+)?;ENCODING=QUOTED-PRINTABLE(;CHARSET=.+?)?):')
-    def __init__(self):
+    def __init__(self, encoding = 'UTF-8'):
+        self.encoding = encoding
         self._consumed_lines = ''
         pass
 
@@ -62,7 +63,7 @@ class QuotedPrintableDecoder:
         m = QuotedPrintableDecoder.quoted.match(line)
         if m:
             line = line[:m.start(1)] + line[m.end(1):] # remove the matched group 1 from line
-            decoded_line = quopri.decodestring(line).decode('UTF-8')
+            decoded_line = quopri.decodestring(line).decode(self.encoding)
             # Escape newlines, but preserve the last one (which must be '\n', since we read the file in universal newliens mode)
             decoded_line = decoded_line[:-1].replace('\r\n', '\\n')
             decoded_line = decoded_line.replace('\n', '\\n')
@@ -136,7 +137,7 @@ def main(argv):
     parser = argparse.ArgumentParser(description='Convert VCard 2.1 to VCard 3.0.')
     parser.add_argument('infile')
     parser.add_argument('outfile', nargs='?')
-    parser.add_argument('--in_encoding', help='the encoding of the input file (default: platform dependent)')
+    parser.add_argument('--in_encoding', default=sys.getdefaultencoding() ,help='the encoding of the input file (default: platform dependent)')
     parser.add_argument('--out_encoding', help='the encoding for the output file (default: platform dependent)')
     parser.add_argument('-r', '--remove', action='append', help='remove lines matching regex REMOVE, can be given multiple times')
     parser.add_argument('--remove_card', action='append', help='remove vcards for which any line matches regex REMOVE, can be given multiple times')
@@ -150,7 +151,7 @@ def main(argv):
         out_name = args.infile+'.converted'
 
     vcard = VCard(True if args.prune_empty else False)
-    decoder = QuotedPrintableDecoder()
+    decoder = QuotedPrintableDecoder(args.in_encoding)
     replace = Replacer()
     if args.remove_dollar:
         replace.replace_filters.append( (re.compile('^(N|FN):([^$]+)\$'), '\\1:\\2') )

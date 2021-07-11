@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:2.1
+N:Test;Firstnamer
+FN:Firstnamer Test
+X-NOTE: use --in_encoding Windows-1252 to correctely decode the quoted printable
+NOTE;ENCODING=QUOTED-PRINTABLE:1 St. Albans Brook apt 5 =0D=0A=0D=0A=0D=0AReid=92s place :=0D=0A364 3r=
+d St. in Jersey City
+TEL;HOME;VOICE:+15554441234
+ADR;HOME:;;50 R Ave;Bergen;New Jersey;07621;United States
+LABEL;HOME;ENCODING=QUOTED-PRINTABLE:50 R Ave=0D=0ABergen, New Jersey 07621=0D=0AUnited States
+REV:20210608T150253Z
+END:VCARD
