@@ -6,6 +6,8 @@ import itertools
 import sys
 
 # FN is required: VCard implementation assumes it is present
+
+
 class VCard:
     BEGIN = 'BEGIN:VCARD'
     END = 'END:VCARD'
@@ -24,13 +26,13 @@ class VCard:
         if VCard.VERSION.match(line):
             self._version = line
         elif VCard.FN.match(line):
-            self._properties.append([ line ])
+            self._properties.append([line])
             self._fn_idx = len(self._properties)-1
-        elif line.startswith('\u0020') or line.startswith('\u0009'): 
+        elif line.startswith('\u0020') or line.startswith('\u0009'):
             # line continuation: https://tools.ietf.org/html/rfc6350#section-3.2
             self._properties[-1].append(line)
         else:
-            self._properties.append([ line ])
+            self._properties.append([line])
 
     def merge(self, vcard):
         # omit other vcard FN
@@ -44,8 +46,8 @@ class VCard:
         to.write(VCard.BEGIN+'\n')
         to.write(self._version)
 
-        self._properties.sort(key = VCard._key)
-        self._fn_idx = 0 # FN is now first property
+        self._properties.sort(key=VCard._key)
+        self._fn_idx = 0  # FN is now first property
         prev = None
         for p in self._properties:
             if (VCard._different(prev, p)):
@@ -70,7 +72,7 @@ class VCard:
         l = len(a)
         if l > 1:
             # multilines come last
-            return 'ZZ'+str(l);
+            return 'ZZ'+str(l)
         if VCard.FN.match(a[0]):
             # FN comes first
             return '0'+str(a)
@@ -82,13 +84,13 @@ class VCard:
     def fn_str(self):
         return str(self._properties[self._fn_idx])
 
+
 def main(argv):
     parser = argparse.ArgumentParser(description='Merge and sort vcards.')
     parser.add_argument('infile')
     parser.add_argument('outfile', nargs='?')
     parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args(argv)
-
 
     entries = []
     with open(args.infile) as infile:
@@ -100,7 +102,7 @@ def main(argv):
 
     if args.verbose:
         print('input entries :', len(entries))
-    entries.sort(key = VCard.fn_str)
+    entries.sort(key=VCard.fn_str)
 
     # merge
     entries_merged = []
@@ -130,6 +132,7 @@ def main(argv):
 
     if args.verbose:
         print('output entries:', len(entries))
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

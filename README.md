@@ -15,7 +15,7 @@ Quickstart:
     git clone https://github.com/jowave/vcard2to3.git
     cd vcard2to3
     ./vcard2to3.py your_file.vcf
-    
+
 The output will be a file `your_file.vcf.converted`.
 
 To show available command-line arguments run:
@@ -51,7 +51,7 @@ To show available command-line arguments run:
       -p, --prune_empty     remove vcards which have only FN but no additional
                             fields
 
-## vcard_merge.py
+## vcard\_merge.py
 
 Merge and sort vcards. With `vcard_merge.py` you can remove duplicate contacts. The contacts are sorted and merged by `FN` and duplicate lines within one contact are omitted.
 You may have to manually edit the result.
