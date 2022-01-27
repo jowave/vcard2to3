@@ -8,7 +8,8 @@ import quopri
 class VCard:
     BEGIN = 'BEGIN:VCARD'
     END = 'END:VCARD'
-    FN = re.compile('FN[:;]')
+    N = re.compile('^N[:;]')
+    FN = re.compile('^FN[:;]')
     NICKNAME = re.compile('NICKNAME[:;]')
     def __init__(self, prune_empty=False):
         self.reset()
@@ -16,30 +17,54 @@ class VCard:
     def reset(self):
         self.lines = []
         self._omit = False
+        self._n = None
         self._fn = None
-    def add(self, line):
-        self.lines.append(line)
+    def add(self, line, idx=None):
+        if idx is not None:
+            self.lines.insert(idx, line)
+        else:
+            self.lines.append(line)
+        if VCard.N.match(line):
+            self._n = line
         if VCard.FN.match(line):
             self._fn = line
     def omit(self):
         self._omit = True
     def valid(self):
-        return self._fn != None
+        return self._n != None and self._fn != None
+    def repair(self):
+        if self.valid():
+            return
+        nick_idx = -1
+        n_idx = -1
+        fn_idx = -1
+        for i, l in enumerate(self.lines[1:-1]):
+            if VCard.N.match(l):
+                n_idx = i+1
+            if VCard.FN.match(l):
+                fn_idx = i+1
+            if VCard.NICKNAME.match(l):
+                nick_idx = i+1
+        if not self.valid():
+            # insert the "equivalent" field after the existing one
+            # Arbitrary "convertion": whitespace in FN <-> ';' in N
+            # N and FN have precedence over NICKNAME
+            if n_idx >= 0 and self._fn is None:
+                self.add(self.lines[n_idx].replace('N', 'FN', 1).replace(';', ' ', 1), n_idx+1)
+            elif fn_idx >= 0 and self._n is None:
+                self.add(';'.join(self.lines[fn_idx].replace('FN', 'N', 1).split())+'\n', fn_idx+1)
+            elif nick_idx >= 0 and (not self._prune_empty or len(self.lines) > 4):
+                # no N or FN but NICKNAME found, use it
+                # note that this loosens the vCard2.1 spec. (NICKNAME unsupported)
+                if self._n is None:
+                    self.add(self.lines[nick_idx].replace('NICKNAME', 'N', 1), nick_idx)
+                if self._fn is None:
+                    self.add(self.lines[nick_idx].replace('NICKNAME', 'FN', 1), nick_idx)
     def write(self, to):
         if self._omit:
             return
-        nick_idx = -1
-        for i,l in enumerate(self.lines[1:-1]):
-            if VCard.NICKNAME.match(l):
-                if self._fn and (self._fn[3:] == l[9:]):
-                    del(self.lines[i+1]) # NICKNAME == FN => remove nickname
-                else:
-                    nick_idx = i+1
-        if not self.valid() and nick_idx >= 0 and (not self._prune_empty or len(self.lines) > 4):
-            # no FN but NICKNAME found, use it
-            self.lines[nick_idx] = self.lines[nick_idx].replace('NICKNAME', 'FN', 1)
-            self._fn = self.lines[nick_idx]
-            nick_idx = -1
+        # If either N, FN or NICKNAME is found, use it for the missing N or FN
+        self.repair()
         if not self.valid():
             return
         for line in self.lines:
