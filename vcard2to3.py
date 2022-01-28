@@ -57,11 +57,20 @@ class VCard:
             # Arbitrary "convertion": whitespace in FN <-> ';' in N
             # N and FN have precedence over NICKNAME
             if n_idx >= 0 and self._fn is None:
-                self.add(self.lines[n_idx].replace(
-                    'N', 'FN', 1).replace(';', ' ', 1), n_idx+1)
+                new_fn = self.lines[n_idx].replace('N', 'FN', 1)
+                # split and join the field to handle ';' -> ' '
+                new_fn = new_fn.split(':')
+                new_fn[1] = ' '.join(new_fn[1].split(';')).strip() + '\n'
+                new_fn = ':'.join(new_fn)
+                self.add(new_fn, n_idx+1)
             elif fn_idx >= 0 and self._n is None:
-                self.add(';'.join(self.lines[fn_idx].replace(
-                    'FN', 'N', 1).split())+'\n', fn_idx+1)
+                new_n = self.lines[fn_idx].replace('FN', 'N', 1)
+                new_n = new_n.split(':')
+                # note: if there are more (>=) than 5 items, the supplementary
+                #  ones are actually ignored by the vcard2.1/3 standard.
+                new_n[1] = ';'.join(new_n[1].split()).strip() + '\n'
+                new_n = ':'.join(new_n)
+                self.add(new_n, fn_idx+1)
             elif nick_idx >= 0 and (not self._prune_empty or len(self.lines) > 4):
                 # no N or FN but NICKNAME found, use it
                 # note that this loosens the vCard2.1 spec. (NICKNAME unsupported)
