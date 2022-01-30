@@ -1,11 +1,12 @@
 #!/bin/sh
+
 out=$2
 tmp=$1.tmp
 if [ -e $tmp ]; then
     echo "'$tmp' exists. Aborting."
     exit
 fi
-if [ -z "$out"]; then 
+if [ -z "$out"]; then
     out=$1.processed;
 fi
 ./vcard2to3.py --remove '.*@chat\.facebook\.com' --remove_card 'FN:New contact' --remove_dollar --prune_empty $1 $tmp
