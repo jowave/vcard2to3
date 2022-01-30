@@ -13,9 +13,8 @@ class VCard:
     FN = re.compile('^FN[:;]')
     NICKNAME = re.compile('NICKNAME[:;]')
 
-    def __init__(self, prune_empty=False):
+    def __init__(self):
         self.reset()
-        self._prune_empty = prune_empty
 
     def reset(self):
         self.lines = []
@@ -71,7 +70,7 @@ class VCard:
                 new_n[1] = ';'.join(new_n[1].split()).strip() + '\n'
                 new_n = ':'.join(new_n)
                 self.add(new_n, fn_idx+1)
-            elif nick_idx >= 0 and (not self._prune_empty or len(self.lines) > 4):
+            elif nick_idx >= 0:
                 # no N or FN but NICKNAME found, use it
                 # note that this loosens the vCard2.1 spec. (NICKNAME unsupported)
                 if self._n is None:
@@ -209,8 +208,6 @@ def main(argv):
                         help='remove vcards for which any line matches regex REMOVE, can be given multiple times')
     parser.add_argument('--remove_dollar', action='store_true',
                         help='remove "$" in N and FN values')
-    parser.add_argument('-p', '--prune_empty', action='store_true',
-                        help='remove vcards which have only FN but no additional fields')
     args = parser.parse_args(argv)
 
     if args.outfile:
@@ -218,7 +215,7 @@ def main(argv):
     else:
         out_name = args.infile+'.converted'
 
-    vcard = VCard(True if args.prune_empty else False)
+    vcard = VCard()
     decoder = QuotedPrintableDecoder(args.in_encoding)
     replace = Replacer()
     if args.remove_dollar:

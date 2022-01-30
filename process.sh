@@ -9,7 +9,7 @@ fi
 if [ -z "$out"]; then
     out=$1.processed;
 fi
-./vcard2to3.py --remove '.*@chat\.facebook\.com' --remove_card 'FN:New contact' --remove_dollar --prune_empty $1 $tmp
+./vcard2to3.py --remove '.*@chat\.facebook\.com' --remove_card 'FN:New contact' --remove_dollar $1 $tmp
 if [ $? -ne 0 ]; then
     exit
 fi
