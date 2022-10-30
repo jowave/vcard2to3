@@ -110,10 +110,13 @@ class QuotedPrintableDecoder:
         self._consumed_lines = ''
         m = QuotedPrintableDecoder.quoted.match(line)
         if m:
-            # remove the matched group 1 from line
-            line = line[:m.start(1)] + line[m.end(1):]
-            decoded_line = quopri.decodestring(line).decode(self.encoding)
-            # Escape newlines, but preserve the last one (which must be '\n', since we read the file in universal newliens mode)
+            # remove the matched group 1 from line (the ';ENCODING=QUOTED-PRINTABLE')
+            string_to_decode = line[:m.start(1)] + line[m.end(1):]
+            try:
+                decoded_line = quopri.decodestring(string_to_decode).decode(self.encoding)
+            except Exception as e:
+                raise Exception("Failed to decode quoted printable in: '" + line + "'") from e
+            # Escape newlines, but preserve the last one (which must be '\n', since we read the file in universal newlines mode)
             decoded_line = decoded_line[:-1].replace('\r\n', '\\n')
             decoded_line = decoded_line.replace('\n', '\\n')
             return decoded_line + '\n'
