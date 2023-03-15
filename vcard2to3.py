@@ -163,6 +163,7 @@ class Replacer:
         self.replace_filters.append(
             (re.compile('^TEL;TYPE=x-mobil:(.*)'), 'TEL;TYPE=cell:\\1'))  # see #9
 
+    @staticmethod
     def type_lc(matchobj):
         # Example:
         # TEL;CELL;VOICE:+49123456789
