@@ -200,8 +200,9 @@ class Remover:
 def main(argv):
     parser = argparse.ArgumentParser(
         description='Convert VCard 2.1 to VCard 3.0.')
-    parser.add_argument('infile')
-    parser.add_argument('outfile', nargs='?')
+    parser.add_argument('infile', help='the input filename')
+    parser.add_argument('outfile', nargs='?',
+                        help='the output filename, defaults to the input filename with ".converted" appended, this file will be overwritten if it exists')
     parser.add_argument('--in_encoding', default=sys.getdefaultencoding(),
                         help='the encoding of the input file (default: platform dependent)')
     parser.add_argument('--out_encoding', default=sys.getdefaultencoding(),
@@ -209,7 +210,7 @@ def main(argv):
     parser.add_argument('-r', '--remove', action='append',
                         help='remove lines matching regex REMOVE, can be given multiple times')
     parser.add_argument('--remove_card', action='append',
-                        help='remove vcards for which any line matches regex REMOVE, can be given multiple times')
+                        help='remove vcards for which any line matches regex REMOVE_CARD, can be given multiple times')
     parser.add_argument('--remove_dollar', action='store_true',
                         help='remove "$" in N and FN values')
     args = parser.parse_args(argv)

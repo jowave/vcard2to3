@@ -24,16 +24,18 @@ To show available command-line arguments run:
 
     usage: vcard2to3.py [-h] [--in_encoding IN_ENCODING]
                         [--out_encoding OUT_ENCODING] [-r REMOVE]
-                        [--remove_card REMOVE_CARD] [--remove_dollar] [-p]
+                        [--remove_card REMOVE_CARD] [--remove_dollar]
                         infile [outfile]
 
     Convert VCard 2.1 to VCard 3.0.
 
     positional arguments:
-      infile
-      outfile
+      infile                the input filename
+      outfile               the output filename, defaults to the input filename
+                            with ".converted" appended, this file will be
+                            overwritten if it exists
 
-    optional arguments:
+    options:
       -h, --help            show this help message and exit
       --in_encoding IN_ENCODING
                             the encoding of the input file (default: platform
@@ -45,11 +47,9 @@ To show available command-line arguments run:
                             remove lines matching regex REMOVE, can be given
                             multiple times
       --remove_card REMOVE_CARD
-                            remove vcards for which any line matches regex REMOVE,
-                            can be given multiple times
+                            remove vcards for which any line matches regex
+                            REMOVE_CARD, can be given multiple times
       --remove_dollar       remove "$" in N and FN values
-      -p, --prune_empty     remove vcards which have only FN but no additional
-                            fields
 
 ## vcard\_merge.py
 
