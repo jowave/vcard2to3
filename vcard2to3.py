@@ -223,7 +223,7 @@ def main(argv):
     replace = Replacer()
     if args.remove_dollar:
         replace.replace_filters.append(
-            (re.compile('^(N|FN):([^$]+)\$'), '\\1:\\2'))
+            (re.compile('^(N|FN):([^$]+)\\$'), '\\1:\\2'))
     remove_line = Remover(args.remove if args.remove else None)
     remove_card = Remover(args.remove_card if args.remove_card else None)
 
