@@ -227,7 +227,6 @@ def main(argv):
     remove_line = Remover(args.remove if args.remove else None)
     remove_card = Remover(args.remove_card if args.remove_card else None)
 
-    last_line = ''
     # VCard uses '\r\n' new lines (CRLF)
     with open(args.infile, mode='r', encoding=args.in_encoding) as infile, open(out_name, 'w', newline='\r\n', encoding=args.out_encoding) as outfile:
         for line in infile:
