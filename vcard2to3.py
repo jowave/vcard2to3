@@ -163,6 +163,7 @@ class Replacer:
         self.replace_filters.append(
             (re.compile('^TEL;TYPE=x-mobil:(.*)'), 'TEL;TYPE=cell:\\1'))  # see #9
 
+    @staticmethod
     def type_lc(matchobj):
         # Example:
         # TEL;CELL;VOICE:+49123456789
@@ -199,8 +200,9 @@ class Remover:
 def main(argv):
     parser = argparse.ArgumentParser(
         description='Convert VCard 2.1 to VCard 3.0.')
-    parser.add_argument('infile')
-    parser.add_argument('outfile', nargs='?')
+    parser.add_argument('infile', help='the input filename')
+    parser.add_argument('outfile', nargs='?',
+                        help='the output filename, defaults to the input filename with ".converted" appended, this file will be overwritten if it exists')
     parser.add_argument('--in_encoding', default=sys.getdefaultencoding(),
                         help='the encoding of the input file (default: platform dependent)')
     parser.add_argument('--out_encoding', default=sys.getdefaultencoding(),
@@ -208,7 +210,7 @@ def main(argv):
     parser.add_argument('-r', '--remove', action='append',
                         help='remove lines matching regex REMOVE, can be given multiple times')
     parser.add_argument('--remove_card', action='append',
-                        help='remove vcards for which any line matches regex REMOVE, can be given multiple times')
+                        help='remove vcards for which any line matches regex REMOVE_CARD, can be given multiple times')
     parser.add_argument('--remove_dollar', action='store_true',
                         help='remove "$" in N and FN values')
     args = parser.parse_args(argv)
@@ -223,11 +225,10 @@ def main(argv):
     replace = Replacer()
     if args.remove_dollar:
         replace.replace_filters.append(
-            (re.compile('^(N|FN):([^$]+)\$'), '\\1:\\2'))
+            (re.compile('^(N|FN):([^$]+)\\$'), '\\1:\\2'))
     remove_line = Remover(args.remove if args.remove else None)
     remove_card = Remover(args.remove_card if args.remove_card else None)
 
-    last_line = ''
     # VCard uses '\r\n' new lines (CRLF)
     with open(args.infile, mode='r', encoding=args.in_encoding) as infile, open(out_name, 'w', newline='\r\n', encoding=args.out_encoding) as outfile:
         for line in infile:
