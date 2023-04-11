@@ -148,8 +148,9 @@ class Replacer:
             '^PHOTO;ENCODING=BASE64;JPEG:'), 'PHOTO;ENCODING=b;TYPE=JPEG:'))  # Version 3.0
         # remove non standard X-INTERNET (not needed for EMAIL anyway)
         self.replace_filters.append((re.compile(';X-INTERNET([;:])'), '\\1'))
+        # handle custom nickname (and omit optional CHARSET parameter)
         self.replace_filters.append((re.compile(
-            '^X-ANDROID-CUSTOM:vnd.android.cursor.item/nickname;([^;]+);.*'), 'NICKNAME:\\1'))
+            '^X-ANDROID-CUSTOM(?:;CHARSET=.+?)?:vnd.android.cursor.item/nickname;([^;]+);.*'), 'NICKNAME:\\1'))
         self.replace_filters.append(
             (re.compile('^X-JABBER(;?.*):(.+)'), 'IMPP\\1:xmpp:\\2'))  # Version 4.0
         self.replace_filters.append(

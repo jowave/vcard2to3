@@ -75,3 +75,10 @@ VERSION:2.1
 N:Dollar;The
 FN:The Dollar$
 END:VCARD
+
+BEGIN:VCARD
+VERSION:2.1
+N:Test;Hola
+FN:Hola Test
+X-ANDROID-CUSTOM;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:vnd.android.cursor.item/nickname;=48=C3=96=4C=41;;;;;;;;;;;;;;
+END:VCARD
